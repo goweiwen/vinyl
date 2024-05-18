@@ -1,0 +1,14 @@
+import { AboutSlint } from "std-widgets.slint";
+
+import "fonts/Nunito.ttf";
+
+export component MainWindow inherits Window {
+    default-font-family: "Nunito";
+
+    AboutSlint {}
+
+    Text {
+        text: "hello world";
+        color: green;
+    }
+}

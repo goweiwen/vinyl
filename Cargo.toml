@@ -1,0 +1,30 @@
+[package]
+name = "vinyl"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+simulator = ["slint/backend-default"]
+miyoo = []
+
+[dependencies]
+anyhow = "1.0.85"
+bytemuck = "1.16.0"
+clap = { version = "4.5.4", features = ["derive"] }
+evdev = "0.12.2"
+framebuffer = "0.3.1"
+lofty = "0.19.2"
+log = "0.4.21"
+nix = { version = "0.28.0", features = ["ioctl"] }
+rgb = "0.8.37"
+rubato = "0.15.0"
+simple_logger = { version = "5.0.0", default-features = false }
+slint = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "log", "renderer-software"] }
+slint-interpreter = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "renderer-software"] }
+smallvec = "1.13.2"
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", branch = "dev-0.6", features = ["all-codecs", "all-formats"] }
+
+[build-dependencies]
+slint-build = "1.6.0"
