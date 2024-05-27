@@ -7,46 +7,18 @@ mod miyoo;
 
 use anyhow::Result;
 use clap::Parser;
-use std::path::{Path, PathBuf};
 
 slint::include_modules!();
 
 #[derive(Debug, Parser)]
-#[command(name = "vinyl")]
+#[command(name = "vinyl", version, about, long_about = None)]
 #[command(bin_name = "vinyl")]
-struct VinylCli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Debug, clap::Subcommand)]
-#[command(version, about, long_about = None)]
-enum Commands {
-    Run,
-    #[command(arg_required_else_help = true)]
-    Play {
-        path: PathBuf,
-    },
-    #[command(arg_required_else_help = true)]
-    Raw {
-        path: PathBuf,
-    },
-}
+struct VinylCli {}
 
 fn main() -> Result<()> {
-    let args = VinylCli::parse();
+    let _ = VinylCli::parse();
 
-    match args.command {
-        Commands::Run => {
-            run()?;
-        }
-        Commands::Play { path } => {
-            play(&path)?;
-        }
-        Commands::Raw { path } => {
-            raw(&path)?;
-        }
-    }
+    run()?;
 
     Ok(())
 }
@@ -59,15 +31,5 @@ fn run() -> Result<()> {
 
     MainWindow::new().unwrap().run().unwrap();
 
-    Ok(())
-}
-
-fn raw(path: &Path) -> Result<()> {
-    audio::play_raw(path)?;
-    Ok(())
-}
-
-fn play(path: &Path) -> Result<()> {
-    audio::play(path)?;
     Ok(())
 }

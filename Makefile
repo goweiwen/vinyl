@@ -16,7 +16,7 @@ build:
 
 .PHONY: simulator
 simulator:
-	WAYLAND_DISPLAY= RUST_BACKTRACE=1 cargo run --features simulator run
+	WAYLAND_DISPLAY= RUST_BACKTRACE=1 cargo run --features simulator
 
 .PHONY: lint
 lint:
