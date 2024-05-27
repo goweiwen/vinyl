@@ -1,14 +1,20 @@
 #![feature(lazy_cell)]
 
 mod audio;
+mod song;
 
-#[cfg(feature = "miyoo")]
+// #[cfg(feature = "miyoo")]
 mod miyoo;
+
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use clap::Parser;
 use log::{info, LevelFilter};
 use simple_logger::SimpleLogger;
+
+use crate::song::SongData;
+use audio::Audio;
 
 slint::include_modules!();
 
@@ -16,6 +22,7 @@ slint::include_modules!();
 #[command(name = "vinyl", version, about, long_about = None)]
 #[command(bin_name = "vinyl")]
 struct VinylCli {
+    path: PathBuf,
     #[arg(short, long, default_value_t = false)]
     verbose: bool,
 }
@@ -41,18 +48,45 @@ fn main() -> Result<()> {
         .init()
         .unwrap();
 
-    run()?;
+    run(&args.path)?;
 
     Ok(())
 }
 
-fn run() -> Result<()> {
+fn run(path: &Path) -> Result<()> {
     #[cfg(feature = "miyoo")]
     {
         slint::platform::set_platform(Box::new(miyoo::MyPlatform::new())).unwrap();
     }
 
-    MainWindow::new().unwrap().run().unwrap();
+    info!("initializing Vinyl...");
+    let app = MainWindow::new().unwrap();
+
+    let song = SongData::load(path.to_path_buf())?;
+
+    app.set_model(Model {
+        now_playing: NowPlaying {
+            duration: 10.0,
+            is_playing: false,
+            progress: 0.0,
+            song: Song {
+                path: song.path.to_string_lossy().as_ref().into(),
+                title: song.title.as_deref().unwrap_or_default().into(),
+                artist: song.artist.as_deref().unwrap_or_default().into(),
+                album: song.album.as_deref().unwrap_or_default().into(),
+                cover_art: song.cover_art()?,
+            },
+        },
+        songs: [].into(),
+    });
+
+    app.global::<MusicService>().on_play_song(|song| {
+        info!("{:?}", song);
+        audio::AUDIO.play(Path::new(song.path.as_str()));
+    });
+
+    info!("running event loop");
+    app.run().unwrap();
 
     Ok(())
 }

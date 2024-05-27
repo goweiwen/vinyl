@@ -6,10 +6,10 @@ use std::path::Path;
 
 use crate::audio::Audio;
 
-struct Rodio {}
+pub struct Rodio {}
 
 impl Audio for Rodio {
-    fn play(path: &Path) -> Result<()> {
+    fn play(&self, path: &Path) -> Result<()> {
         // Get an output stream handle to the default physical sound device
         let (_stream, stream_handle) = OutputStream::try_default()?;
         // Load a sound from a file, using a path relative to Cargo.toml

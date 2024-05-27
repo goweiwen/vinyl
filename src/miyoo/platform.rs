@@ -1,7 +1,10 @@
+use std::cell::Cell;
+use std::sync::mpsc::channel;
+use std::thread;
 use std::{cell::RefCell, rc::Rc};
 
 use framebuffer::Framebuffer;
-use log::trace;
+use log::{info, trace};
 use slint::platform::software_renderer::{PremultipliedRgbaColor, TargetPixel};
 use slint::{
     platform::{
@@ -11,10 +14,10 @@ use slint::{
     PhysicalSize,
 };
 
-use crate::miyoo::evdev::EvdevKeys;
+use crate::miyoo::evdev::Evdev;
 
 pub struct MyPlatform {
-    evdev: RefCell<EvdevKeys>,
+    evdev: Cell<Option<Evdev>>,
     framebuffer: RefCell<Framebuffer>,
     buffer_size: usize,
     buffer_offset: usize,
@@ -46,7 +49,7 @@ impl MyPlatform {
             framebuffer.var_screen_info.yres,
         ));
         let framebuffer = RefCell::new(framebuffer);
-        let evdev = RefCell::new(EvdevKeys::new());
+        let evdev = Cell::new(Some(Evdev::new()));
 
         Self {
             evdev,
@@ -66,7 +69,14 @@ impl Platform for MyPlatform {
     }
 
     fn run_event_loop(&self) -> Result<(), slint::PlatformError> {
-        let mut evdev = self.evdev.borrow_mut();
+        let mut evdev = self.evdev.take().unwrap();
+        let (input_tx, input_rx) = channel();
+        thread::spawn(move || loop {
+            if let Some(event) = evdev.poll() {
+                let _ = input_tx.send(event);
+            }
+        });
+
         let mut framebuffer = self.framebuffer.borrow_mut();
         let mut frame: Vec<RGBX8> = vec![
             RGBX8::default();
@@ -77,8 +87,7 @@ impl Platform for MyPlatform {
             // Let Slint run the timer hooks and update animations.
             slint::platform::update_timers_and_animations();
 
-            // Check the touch screen or input device using your driver.
-            if let Some(event) = evdev.poll() {
+            while let Ok(event) = input_rx.try_recv() {
                 self.window.dispatch_event(event);
             }
 

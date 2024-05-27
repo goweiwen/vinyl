@@ -2,13 +2,10 @@ mod resampler;
 
 use anyhow::Result;
 use bytemuck::cast_slice;
-use lofty::file::TaggedFileExt;
-use lofty::picture::{PictureInformation, PictureType};
-use lofty::tag::Accessor;
 use nix::ioctl_readwrite;
 use std::fs::File;
 use std::fs::OpenOptions;
-use std::io::{Read, Seek, Write};
+use std::io::Write;
 use std::os::fd::AsRawFd;
 use std::path::Path;
 use std::sync::{LazyLock, Mutex};
@@ -39,32 +36,11 @@ static DSP: LazyLock<Mutex<File>> = LazyLock::new(|| {
     Mutex::new(dsp)
 });
 
-struct Oss {}
+pub struct Oss {}
 
 impl Audio for Oss {
-    fn play(path: &Path) -> Result<()> {
-        let mut file = File::open(path)?;
-
-        let tag = lofty::read_from(&mut file)?;
-        file.seek(std::io::SeekFrom::Start(0))?;
-        if let Some(tag) = tag.primary_tag() {
-            let artist = tag.artist().unwrap_or_default();
-            let title = tag.title().unwrap_or_default();
-            let album = tag.album().unwrap_or_default();
-
-            let cover_art = tag.pictures().into_iter().find(|x| {
-                dbg!(x.pic_type()) == PictureType::CoverFront || x.pic_type() == PictureType::Other
-            });
-
-            println!("Playing {title} - {artist} [{album}]");
-
-            if let Some(cover_art) = cover_art {
-                println!(
-                    "Cover art: {:?}",
-                    PictureInformation::from_picture(cover_art)
-                );
-            }
-        }
+    fn play(&self, path: &Path) -> Result<()> {
+        let file = File::open(path)?;
 
         let mss_opts = MediaSourceStreamOptions::default();
         let mss = MediaSourceStream::new(Box::new(file), mss_opts);

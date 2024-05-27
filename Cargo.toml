@@ -7,20 +7,21 @@ authors = ["Goh Wei Wen <goweiwen@gmail.com>"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-simulator = ["slint/backend-default"]
+simulator = ["slint/backend-default", "rodio"]
 miyoo = []
 
 [dependencies]
 anyhow = "1.0.85"
 bytemuck = "1.16.0"
 clap = { version = "4.5.4", features = ["derive"] }
-evdev = "0.12.2"
+evdev = { version = "0.12.2", features = ["tokio"] }
 framebuffer = "0.3.1"
+image = "0.25.1"
 lofty = "0.19.2"
 log = { version = "0.4.21", features = ["release_max_level_info"] }
 nix = { version = "0.28.0", features = ["ioctl"] }
 rgb = "0.8.37"
-rodio = "0.18.1"
+rodio = { version = "0.18.1", optional = true }
 rubato = "0.15.0"
 simple_logger = "5.0.0"
 slint = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "log", "renderer-software"] }

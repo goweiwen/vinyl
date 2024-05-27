@@ -31,11 +31,11 @@ fn map_key(value: evdev::Key) -> Option<SharedString> {
     )
 }
 
-pub struct EvdevKeys {
+pub struct Evdev {
     pub device: Device,
 }
 
-impl EvdevKeys {
+impl Evdev {
     pub fn new() -> Self {
         Self {
             device: Device::open("/dev/input/event0").expect("Failed to open /dev/input/event0"),
