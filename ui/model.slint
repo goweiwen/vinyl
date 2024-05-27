@@ -1,0 +1,16 @@
+export struct Song {
+    title: string,
+    artist: string,
+}
+
+export struct NowPlaying {
+    song: Song,
+    progress: float,
+    duration: float,
+    is-playing: bool,
+}
+
+export struct Model {
+    now-playing: NowPlaying,
+    songs: [Song],
+}

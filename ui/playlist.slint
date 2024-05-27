@@ -1,0 +1,18 @@
+import { Song } from "model.slint";
+import { VerticalBox, HorizontalBox, ListView } from "std-widgets.slint";
+
+export component Player {
+    in-out property <[Song]> songs;
+
+    ListView {
+        for song in songs: HorizontalBox {
+            Text {
+                text: song.title;
+            }
+
+            Text {
+                text: song.artist;
+            }
+        }
+    }
+}

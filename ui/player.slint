@@ -1,0 +1,22 @@
+import { NowPlaying } from "model.slint";
+import { VerticalBox, Slider } from "std-widgets.slint";
+
+export component Player {
+    in-out property <NowPlaying> now-playing;
+
+    VerticalBox {
+        Text {
+            text: now-playing.song.title;
+        }
+
+        Text {
+            text: now-playing.song.artist;
+        }
+
+        Slider {
+            minimum: 0;
+            maximum: now-playing.duration;
+            value: now-playing.progress * now-playing.duration;
+        }
+    }
+}
