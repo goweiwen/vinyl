@@ -12,11 +12,11 @@ clean:
 
 .PHONY: build
 build:
-	cross build --release --target=$(CROSS_TARGET_TRIPLE) --features=miyoo
+	cross build --release --target=$(CROSS_TARGET_TRIPLE) --no-default-features --features=miyoo
 
 .PHONY: simulator
 simulator:
-	WAYLAND_DISPLAY= RUST_BACKTRACE=1 cargo run --features simulator
+	WAYLAND_DISPLAY= RUST_BACKTRACE=1 cargo run
 
 .PHONY: lint
 lint:
