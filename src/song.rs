@@ -13,7 +13,6 @@ use lofty::{
     picture::PictureType,
     tag::Accessor,
 };
-use log::info;
 use slint::SharedPixelBuffer;
 
 pub struct SongData {
@@ -27,8 +26,8 @@ pub struct SongData {
 
 impl SongData {
     pub fn load(path: PathBuf) -> Result<Self> {
-        let mut file = &mut File::open(&path)?;
-        let tagged_file = lofty::read_from(&mut file)?;
+        let file = &mut File::open(&path)?;
+        let tagged_file = lofty::read_from(file)?;
         file.seek(std::io::SeekFrom::Start(0))?;
         let Some(tag) = tagged_file.primary_tag() else {
             return Err(anyhow!("Tag not found"));
@@ -43,7 +42,7 @@ impl SongData {
 
         let cover_art = tag
             .pictures()
-            .into_iter()
+            .iter()
             .find(|x| x.pic_type() == PictureType::CoverFront || x.pic_type() == PictureType::Other)
             .map(|picture| image::load_from_memory(picture.data()))
             .transpose()?

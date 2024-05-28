@@ -1,6 +1,7 @@
 use image::{Rgba, RgbaImage};
 
 /// Draw rounded corners on an image.
+#[allow(unused)]
 pub fn round(image: &mut RgbaImage, radius: u32) {
     let color = Rgba([0, 0, 0, 0]);
 
