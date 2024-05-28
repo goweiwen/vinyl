@@ -8,14 +8,16 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::fd::AsRawFd;
 use std::path::Path;
-use std::sync::{LazyLock, Mutex};
+use symphonia::core::codecs::Decoder;
 use symphonia::core::codecs::DecoderOptions;
 use symphonia::core::errors::Error;
 use symphonia::core::formats::FormatOptions;
+use symphonia::core::formats::FormatReader;
 use symphonia::core::io::{MediaSourceStream, MediaSourceStreamOptions};
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::probe::Hint;
 
+use crate::audio::oss::resampler::Resampler;
 use crate::audio::Audio;
 
 ioctl_readwrite!(dsp_speed, b'P', 2, i32);
@@ -26,20 +28,34 @@ static SAMPLE_RATE: u32 = 48000;
 static BIT_RATE: i32 = 0x10;
 static CHANNELS: i32 = 2;
 
-static DSP: LazyLock<Mutex<File>> = LazyLock::new(|| {
-    let dsp = OpenOptions::new().write(true).open("/dev/dsp").unwrap();
-    unsafe {
-        dsp_speed(dsp.as_raw_fd(), &mut (SAMPLE_RATE as i32 * 2)).unwrap(); // idk why music is playing at half speed. this is a hack
-        dsp_setfmt(dsp.as_raw_fd(), &mut (BIT_RATE as i32)).unwrap();
-        dsp_channels(dsp.as_raw_fd(), &mut (CHANNELS as i32)).unwrap();
-    }
-    Mutex::new(dsp)
-});
+pub struct Oss {
+    dsp: File,
+    track: Option<Track>,
+}
 
-pub struct Oss {}
+struct Track {
+    format: Box<dyn FormatReader>,
+    decoder: Box<dyn Decoder>,
+    resampler: Option<Resampler<i16>>,
+    track_id: u32,
+    samples: Vec<i16>,
+}
+
+impl Oss {
+    pub fn new() -> Self {
+        let dsp = OpenOptions::new().write(true).open("/dev/dsp").unwrap();
+        unsafe {
+            dsp_speed(dsp.as_raw_fd(), &mut (SAMPLE_RATE as i32 * 2)).unwrap(); // idk why music is playing at half speed. this is a hack
+            dsp_setfmt(dsp.as_raw_fd(), &mut (BIT_RATE as i32)).unwrap();
+            dsp_channels(dsp.as_raw_fd(), &mut (CHANNELS as i32)).unwrap();
+        }
+
+        Self { dsp, track: None }
+    }
+}
 
 impl Audio for Oss {
-    fn play(&self, path: &Path) -> Result<()> {
+    fn load(&mut self, path: &Path) -> Result<()> {
         let file = File::open(path)?;
 
         let mss_opts = MediaSourceStreamOptions::default();
@@ -53,23 +69,38 @@ impl Audio for Oss {
         let meta_opts = MetadataOptions::default();
         let fmt_opts = FormatOptions::default();
 
-        let mut format = symphonia::default::get_probe().format(&hint, mss, fmt_opts, meta_opts)?;
+        let format = symphonia::default::get_probe().format(&hint, mss, fmt_opts, meta_opts)?;
 
         let Some(track) = format.default_track() else {
             return Ok(());
         };
-        println!("{:?}", track);
-
-        let dec_opts = DecoderOptions::default();
-
-        let mut decoder = symphonia::default::get_codecs().make(&track.codec_params, &dec_opts)?;
         let track_id = track.id;
 
-        let mut resampler = None;
-        let mut samples: Vec<i16> = vec![];
+        let dec_opts = DecoderOptions::default();
+        let decoder = symphonia::default::get_codecs().make(&track.codec_params, &dec_opts)?;
 
-        let mut dsp = DSP.lock().unwrap();
+        self.track = Some(Track {
+            format,
+            decoder,
+            resampler: None,
+            track_id,
+            samples: vec![],
+        });
 
+        Ok(())
+    }
+
+    fn play(&mut self) -> Result<()> {
+        let Some(Track {
+            ref mut format,
+            ref mut decoder,
+            ref mut resampler,
+            track_id,
+            ref mut samples,
+        }) = self.track
+        else {
+            return Ok(());
+        };
         while let Some(packet) = format.next_packet()? {
             // If the packet does not belong to the selected track, skip over it.
             if packet.track_id() != track_id {
@@ -82,15 +113,15 @@ impl Audio for Oss {
                     let spec = decoded.spec();
                     if resampler.is_none() && spec.rate() != SAMPLE_RATE {
                         println!("Resampling {} Hz to {} Hz", spec.rate(), SAMPLE_RATE);
-                        resampler = Some(resampler::Resampler::new(spec, SAMPLE_RATE, 1024));
+                        *resampler = Some(resampler::Resampler::new(spec, SAMPLE_RATE, 1024));
                     }
 
-                    if let Some(resampler) = &mut resampler {
-                        resampler.resample(decoded, &mut samples);
+                    if let Some(resampler) = resampler {
+                        resampler.resample(decoded, samples);
                     } else {
-                        decoded.copy_to_vec_interleaved(&mut samples);
+                        decoded.copy_to_vec_interleaved(samples);
                     }
-                    dsp.write_all(cast_slice(&samples))?;
+                    self.dsp.write_all(cast_slice(&samples))?;
                 }
                 Err(Error::IoError(e)) => {
                     // The packet failed to decode due to an IO error, skip the packet.
@@ -109,11 +140,15 @@ impl Audio for Oss {
             }
         }
 
-        if let Some(resampler) = &mut resampler {
-            resampler.flush(&mut samples);
-            dsp.write_all(cast_slice(&samples))?;
+        if let Some(resampler) = resampler {
+            resampler.flush(samples);
+            self.dsp.write_all(cast_slice(&samples))?;
         }
 
+        Ok(())
+    }
+
+    fn pause(&mut self) -> Result<()> {
         Ok(())
     }
 }

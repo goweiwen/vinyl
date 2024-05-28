@@ -6,7 +6,7 @@ use anyhow::Result;
 #[cfg(feature = "miyoo")]
 mod oss;
 #[cfg(feature = "miyoo")]
-pub static AUDIO: oss::Oss = oss::Oss {};
+pub static AUDIO: LazyLock<Mutex<oss::Oss>> = LazyLock::new(|| Mutex::new(oss::Oss::new()));
 
 #[cfg(not(feature = "miyoo"))]
 mod rodio;
