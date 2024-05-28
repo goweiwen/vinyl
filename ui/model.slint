@@ -4,12 +4,12 @@ export struct Song {
     artist: string,
     album: string,
     cover-art: image,
+    duration: int,
 }
 
 export struct NowPlaying {
     song: Song,
     progress: float,
-    duration: float,
     is-playing: bool,
 }
 

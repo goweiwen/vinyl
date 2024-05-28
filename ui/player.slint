@@ -1,5 +1,7 @@
+import { Slider, Button } from "std-widgets.slint";
 import { NowPlaying, Song } from "model.slint";
-import { HorizontalBox, VerticalBox, Slider, Button } from "std-widgets.slint";
+import { Text } from "components.slint";
+import { ProgressBar } from "progress-bar.slint";
 
 export global MusicService {
     callback load_song(Song);
@@ -23,43 +25,66 @@ export component Player {
             MusicService.pause();
         }
     }
+    
+    height: 100%;
+    width: 100%;
 
-    HorizontalBox {
-        Image {
-            source: now-playing.song.cover-art;
+    VerticalLayout {
+        padding-left: 36px;
+        padding-right: 36px;
+        alignment: start;
+
+        Text {
+            height: 48px;
+            text: @tr("Now Playing");
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            font-size: 24px;
         }
 
-        VerticalBox {
-            Text {
-                text: now-playing.song.title;
-            }
+        HorizontalLayout {
+            padding-top: 24px;
+            padding-bottom: 36px;
+            spacing: 36px;
 
-            Text {
-                text: now-playing.song.artist;
-            }
+            Rectangle {
+                width: 250px;
+                height: self.width;
 
-            Slider {
-                minimum: 0;
-                maximum: now-playing.duration;
-                value: now-playing.progress * now-playing.duration;
-            }
-
-            Button {
-                text: "Play";
-                clicked => {
-                    debug("play");
-                    MusicService.load_song(now-playing.song);
-                    MusicService.play();
+                Image {
+                    width: 100%;
+                    height: 100%;
+                    source: now-playing.song.cover-art; 
                 }
             }
 
-            Button {
-                text: "Pause";
-                clicked => {
-                    debug("pause");
-                    MusicService.pause();
+            VerticalLayout {
+                spacing: 24px;
+                alignment: start;
+
+                Text {
+                    text: now-playing.song.title;
+                    wrap: word-wrap;
+                    font-size: 32px;
+                }
+
+                Text {
+                    text: now-playing.song.artist;
+                    wrap: word-wrap;
+                    font-size: 28px;
+                }
+
+                Text {
+                    text: now-playing.song.album;
+                    wrap: word-wrap;
+                    font-size: 28px;
                 }
             }
+        }
+
+        ProgressBar {
+            progress: now-playing.progress;
+            duration: now-playing.song.duration;
         }
     }
 }

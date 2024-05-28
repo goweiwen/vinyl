@@ -1,15 +1,13 @@
 #![feature(lazy_cell)]
 
 mod audio;
+mod image;
 mod song;
 
 #[cfg(feature = "miyoo")]
 mod miyoo;
 
-use std::{
-    borrow::BorrowMut,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use clap::Parser;
@@ -69,34 +67,40 @@ fn run(path: &Path) -> Result<()> {
 
     app.set_model(Model {
         now_playing: NowPlaying {
-            duration: 10.0,
             is_playing: false,
-            progress: 0.0,
+            progress: 0.35,
             song: Song {
                 path: song.path.to_string_lossy().as_ref().into(),
                 title: song.title.as_deref().unwrap_or_default().into(),
                 artist: song.artist.as_deref().unwrap_or_default().into(),
                 album: song.album.as_deref().unwrap_or_default().into(),
-                cover_art: song.cover_art()?,
+                cover_art: song.cover_art(24)?,
+                duration: song.duration.as_secs() as i32,
             },
         },
         songs: [].into(),
     });
 
+    app.global::<Format>().on_format_time(|seconds: i32| {
+        let minutes = seconds / 60;
+        let seconds = seconds % 60;
+        format!("{minutes:02}:{seconds:02}").into()
+    });
+
     app.global::<MusicService>().on_load_song(|song| {
         info!("loaded: {:?}", song);
-        audio::AUDIO
+        let _ = audio::AUDIO
             .lock()
             .unwrap()
             .load(Path::new(song.path.as_str()));
     });
 
     app.global::<MusicService>().on_play(|| {
-        audio::AUDIO.lock().unwrap().play();
+        let _ = audio::AUDIO.lock().unwrap().play();
     });
 
     app.global::<MusicService>().on_pause(|| {
-        audio::AUDIO.lock().unwrap().pause();
+        let _ = audio::AUDIO.lock().unwrap().pause();
     });
 
     info!("running event loop");

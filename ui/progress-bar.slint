@@ -1,0 +1,39 @@
+import { Format } from "util.slint";
+import { Text } from "components.slint";
+
+export component ProgressBar inherits VerticalLayout {
+    in property <int> duration;
+    in property <float> progress;
+
+    VerticalLayout {
+        spacing: 12px;
+
+        Rectangle {
+            background: grey;
+            height: 24px;
+            border-radius: 12px;
+            width: 100%;
+
+            Rectangle {
+                x: 0;
+                background: #8de2f7;
+                height: 24px;
+                border-radius: 12px;
+                width: progress * parent.width;
+            }
+        }
+
+        HorizontalLayout {
+            Text {
+                text: Format.format-time(duration);
+                font-size: 24px;
+            }
+
+            Text {
+                text: "-" + Format.format-time((1 - progress) * duration);
+                horizontal-alignment: right;
+                font-size: 24px;
+            }
+        }
+    }
+}
