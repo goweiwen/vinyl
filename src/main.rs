@@ -7,12 +7,16 @@ mod song;
 #[cfg(feature = "miyoo")]
 mod miyoo;
 
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    time::Duration,
+};
 
 use anyhow::Result;
 use clap::Parser;
 use log::{info, LevelFilter};
 use simple_logger::SimpleLogger;
+use slint::Timer;
 
 use crate::song::SongData;
 use audio::Audio;
@@ -65,20 +69,32 @@ fn run(path: &Path) -> Result<()> {
 
     let song = SongData::load(path.to_path_buf())?;
 
-    app.set_model(Model {
-        now_playing: NowPlaying {
-            is_playing: false,
-            progress: 0.35,
-            song: Song {
-                path: song.path.to_string_lossy().as_ref().into(),
-                title: song.title.as_deref().unwrap_or_default().into(),
-                artist: song.artist.as_deref().unwrap_or_default().into(),
-                album: song.album.as_deref().unwrap_or_default().into(),
-                cover_art: song.cover_art(24)?,
-                duration: song.duration.as_secs() as i32,
-            },
-        },
-        songs: [].into(),
+    let timer = Timer::default();
+    timer.start(slint::TimerMode::Repeated, Duration::from_secs(1), {
+        let app = app.as_weak();
+        move || {
+            let app = app.unwrap();
+            let now_playing = app.global::<NowPlaying>();
+            if now_playing.get_is_playing() {
+                let song = now_playing.get_song();
+                let progress = now_playing.get_progress();
+                if progress >= song.duration {
+                    info!("end song");
+                } else {
+                    now_playing.set_progress(progress + 1);
+                }
+            }
+        }
+    });
+
+    app.global::<NowPlaying>().set_is_playing(true);
+    app.global::<NowPlaying>().set_song(Song {
+        path: song.path.to_string_lossy().as_ref().into(),
+        title: song.title.as_deref().unwrap_or_default().into(),
+        artist: song.artist.as_deref().unwrap_or_default().into(),
+        album: song.album.as_deref().unwrap_or_default().into(),
+        cover_art: song.cover_art(24)?,
+        duration: song.duration.as_secs() as i32,
     });
 
     app.global::<Format>().on_format_time(|seconds: i32| {

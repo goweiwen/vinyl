@@ -1,9 +1,9 @@
-import { Model, Song } from "model.slint";
+import { Song, NowPlaying } from "model.slint";
 import { Player, MusicService } from "player.slint";
 import { Format } from "util.slint";
 import "fonts/Nunito.ttf";
 
-export { MusicService, Format }
+export { NowPlaying, MusicService, Format }
 
 export component MainWindow inherits Window {
     default-font-family: "Nunito";
@@ -11,10 +11,7 @@ export component MainWindow inherits Window {
     height: 480px;
     background: black;
 
-    in-out property <Model> model;
-
-    Player {
-        now-playing: model.now-playing;
+    player := Player {
         autoplay: false;
     }
 }

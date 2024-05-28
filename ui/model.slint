@@ -7,13 +7,8 @@ export struct Song {
     duration: int,
 }
 
-export struct NowPlaying {
-    song: Song,
-    progress: float,
-    is-playing: bool,
-}
-
-export struct Model {
-    now-playing: NowPlaying,
-    songs: [Song],
+export global NowPlaying {
+    in property <Song> song;
+    in property <int> progress: 0;
+    in property <bool> is-playing: false;
 }

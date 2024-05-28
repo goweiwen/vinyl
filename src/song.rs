@@ -64,7 +64,7 @@ impl SongData {
             let bytes = cover_art.bytes().collect::<std::io::Result<Vec<_>>>()?;
             let mut image =
                 RgbaImage::from_vec(cover_art.width(), cover_art.height(), bytes).unwrap();
-            crate::image::round(&mut image, border_radius);
+            crate::image::squircle(&mut image, border_radius);
 
             slint::Image::from_rgba8(SharedPixelBuffer::clone_from_slice(
                 image.as_raw(),

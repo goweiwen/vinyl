@@ -10,18 +10,13 @@ export global MusicService {
 }
 
 export component Player {
-    in-out property <NowPlaying> now-playing;
     in property <bool> autoplay;
 
     init => {
-        debug("loading song");
-        MusicService.load_song(now-playing.song);
-        debug("loaded song");
+        MusicService.load_song(NowPlaying.song);
         if autoplay {
-            debug("autoplay");
             MusicService.play();
         } else {
-            debug("no autoplay");
             MusicService.pause();
         }
     }
@@ -39,7 +34,7 @@ export component Player {
             text: @tr("Now Playing");
             horizontal-alignment: center;
             vertical-alignment: center;
-            font-size: 24px;
+            font-size: 20px;
         }
 
         HorizontalLayout {
@@ -54,7 +49,7 @@ export component Player {
                 Image {
                     width: 100%;
                     height: 100%;
-                    source: now-playing.song.cover-art; 
+                    source: NowPlaying.song.cover-art; 
                 }
             }
 
@@ -63,28 +58,28 @@ export component Player {
                 alignment: start;
 
                 Text {
-                    text: now-playing.song.title;
+                    text: NowPlaying.song.title;
                     wrap: word-wrap;
                     font-size: 32px;
                 }
 
                 Text {
-                    text: now-playing.song.artist;
+                    text: NowPlaying.song.artist;
                     wrap: word-wrap;
-                    font-size: 28px;
+                    font-size: 24px;
                 }
 
                 Text {
-                    text: now-playing.song.album;
+                    text: NowPlaying.song.album;
                     wrap: word-wrap;
-                    font-size: 28px;
+                    font-size: 24px;
                 }
             }
         }
 
         ProgressBar {
-            progress: now-playing.progress;
-            duration: now-playing.song.duration;
+            progress: NowPlaying.progress;
+            duration: NowPlaying.song.duration;
         }
     }
 }

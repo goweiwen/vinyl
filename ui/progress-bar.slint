@@ -5,34 +5,37 @@ export component ProgressBar inherits VerticalLayout {
     in property <int> duration;
     in property <float> progress;
 
+    property<length> line-width: 12px;
+
     VerticalLayout {
         spacing: 12px;
 
         Rectangle {
             background: grey;
-            height: 24px;
-            border-radius: 12px;
+            height: line-width;
+            border-radius: line-width;
             width: 100%;
 
             Rectangle {
                 x: 0;
-                background: #8de2f7;
-                height: 24px;
+                background: white;
+                height: line-width;
                 border-radius: 12px;
-                width: progress * parent.width;
+                width: line-width + (progress / duration) * (parent.width - line-width * 2);
+                animate width { duration: 1s; }
             }
         }
 
         HorizontalLayout {
             Text {
                 text: Format.format-time(duration);
-                font-size: 24px;
+                font-size: 20px;
             }
 
             Text {
-                text: "-" + Format.format-time((1 - progress) * duration);
+                text: "-" + Format.format-time(duration - progress);
                 horizontal-alignment: right;
-                font-size: 24px;
+                font-size: 20px;
             }
         }
     }
