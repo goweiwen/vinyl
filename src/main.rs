@@ -3,10 +3,13 @@
 mod audio;
 mod song;
 
-// #[cfg(feature = "miyoo")]
+#[cfg(feature = "miyoo")]
 mod miyoo;
 
-use std::path::{Path, PathBuf};
+use std::{
+    borrow::BorrowMut,
+    path::{Path, PathBuf},
+};
 
 use anyhow::Result;
 use clap::Parser;
@@ -80,9 +83,20 @@ fn run(path: &Path) -> Result<()> {
         songs: [].into(),
     });
 
-    app.global::<MusicService>().on_play_song(|song| {
-        info!("{:?}", song);
-        audio::AUDIO.play(Path::new(song.path.as_str()));
+    app.global::<MusicService>().on_load_song(|song| {
+        info!("loaded: {:?}", song);
+        audio::AUDIO
+            .lock()
+            .unwrap()
+            .load(Path::new(song.path.as_str()));
+    });
+
+    app.global::<MusicService>().on_play(|| {
+        audio::AUDIO.lock().unwrap().play();
+    });
+
+    app.global::<MusicService>().on_pause(|| {
+        audio::AUDIO.lock().unwrap().pause();
     });
 
     info!("running event loop");

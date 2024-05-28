@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::sync::{LazyLock, Mutex};
 
 use anyhow::Result;
 
@@ -10,8 +11,11 @@ pub static AUDIO: oss::Oss = oss::Oss {};
 #[cfg(not(feature = "miyoo"))]
 mod rodio;
 #[cfg(not(feature = "miyoo"))]
-pub static AUDIO: rodio::Rodio = rodio::Rodio {};
+pub static AUDIO: LazyLock<Mutex<rodio::Rodio>> =
+    LazyLock::new(|| Mutex::new(rodio::Rodio::new().unwrap()));
 
 pub trait Audio {
-    fn play(&self, path: &Path) -> Result<()>;
+    fn load(&mut self, path: &Path) -> Result<()>;
+    fn play(&mut self) -> Result<()>;
+    fn pause(&mut self) -> Result<()>;
 }

@@ -1,18 +1,32 @@
 import { NowPlaying, Song } from "model.slint";
-import { HorizontalBox, VerticalBox, Slider } from "std-widgets.slint";
+import { HorizontalBox, VerticalBox, Slider, Button } from "std-widgets.slint";
+
+export global MusicService {
+    callback load_song(Song);
+    callback play();
+    callback pause();
+}
 
 export component Player {
-    callback play_song(Song);
-
     in-out property <NowPlaying> now-playing;
+    in property <bool> autoplay;
 
     init => {
-        play_song(now-playing.song);
+        debug("loading song");
+        MusicService.load_song(now-playing.song);
+        debug("loaded song");
+        if autoplay {
+            debug("autoplay");
+            MusicService.play();
+        } else {
+            debug("no autoplay");
+            MusicService.pause();
+        }
     }
 
     HorizontalBox {
         Image {
-            source: now-playing.song.cover-art; 
+            source: now-playing.song.cover-art;
         }
 
         VerticalBox {
@@ -28,6 +42,23 @@ export component Player {
                 minimum: 0;
                 maximum: now-playing.duration;
                 value: now-playing.progress * now-playing.duration;
+            }
+
+            Button {
+                text: "Play";
+                clicked => {
+                    debug("play");
+                    MusicService.load_song(now-playing.song);
+                    MusicService.play();
+                }
+            }
+
+            Button {
+                text: "Pause";
+                clicked => {
+                    debug("pause");
+                    MusicService.pause();
+                }
             }
         }
     }
