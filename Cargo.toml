@@ -25,7 +25,6 @@ rodio = { version = "0.18.1", optional = true }
 rubato = "0.15.0"
 simple_logger = "5.0.0"
 slint = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "log", "renderer-software"] }
-slint-interpreter = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "renderer-software"] }
 smallvec = "1.13.2"
 symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", branch = "dev-0.6", features = ["all-codecs", "all-formats"] }
 

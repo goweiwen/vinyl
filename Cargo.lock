@@ -1238,12 +1238,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfc6580bb841c5a68e9ef15c77ccc837b40a7504914d52e47b8b0e9bbda25a1d"
 
 [[package]]
-name = "generativity"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5881e4c3c2433fe4905bb19cfd2b5d49d4248274862b68c27c33d9ba4e13f9ec"
-
-[[package]]
 name = "gethostname"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3203,25 +3197,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "slint-interpreter"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "477d32a1d2ea4a69f66fac8c1a5ab700f11fbaaffde7676e4a161b17ca0e7d47"
-dependencies = [
- "derive_more",
- "generativity",
- "i-slint-backend-selector",
- "i-slint-backend-winit",
- "i-slint-common",
- "i-slint-compiler",
- "i-slint-core",
- "lyon_path",
- "once_cell",
- "thiserror",
- "vtable",
-]
-
-[[package]]
 name = "slint-macros"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4084,7 +4059,6 @@ dependencies = [
  "simple_logger",
  "slint",
  "slint-build",
- "slint-interpreter",
  "smallvec",
  "symphonia 0.5.4 (git+https://github.com/pdeljanov/Symphonia.git?branch=dev-0.6)",
 ]
