@@ -4,7 +4,7 @@ use std::thread;
 use std::{cell::RefCell, rc::Rc};
 
 use framebuffer::Framebuffer;
-use log::{info, trace};
+use log::trace;
 use slint::platform::software_renderer::{PremultipliedRgbaColor, TargetPixel};
 use slint::{
     platform::{
@@ -114,13 +114,13 @@ struct RGBX8([u8; 4]);
 impl TargetPixel for RGBX8 {
     fn blend(&mut self, color: PremultipliedRgbaColor) {
         let a = (u8::MAX - color.alpha) as u16;
-        self.0[0] = (self.0[0] as u16 * a / 255) as u8 + color.red;
+        self.0[0] = (self.0[0] as u16 * a / 255) as u8 + color.blue;
         self.0[1] = (self.0[1] as u16 * a / 255) as u8 + color.green;
-        self.0[2] = (self.0[2] as u16 * a / 255) as u8 + color.blue;
+        self.0[2] = (self.0[2] as u16 * a / 255) as u8 + color.red;
     }
 
     fn from_rgb(r: u8, g: u8, b: u8) -> Self {
-        Self([r, g, b, 255])
+        Self([b, g, r, 255])
     }
 }
 
