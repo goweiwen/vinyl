@@ -1,7 +1,6 @@
-import { Slider, Button } from "std-widgets.slint";
-import { NowPlaying, Song } from "model.slint";
-import { Text } from "components.slint";
-import { ProgressBar } from "progress-bar.slint";
+import { NowPlaying, Song } from "../model.slint";
+import { Text } from "../components/prelude.slint";
+import { ProgressBar } from "../components/progress-bar.slint";
 
 export global MusicService {
     callback load_song(Song);

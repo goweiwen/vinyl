@@ -27,7 +27,7 @@ slint::include_modules!();
 #[command(name = "vinyl", version, about, long_about = None)]
 #[command(bin_name = "vinyl")]
 struct VinylCli {
-    path: PathBuf,
+    path: Option<PathBuf>,
     #[arg(short, long, default_value_t = false)]
     verbose: bool,
 }
@@ -53,12 +53,12 @@ fn main() -> Result<()> {
         .init()
         .unwrap();
 
-    run(&args.path)?;
+    run(args.path.as_deref())?;
 
     Ok(())
 }
 
-fn run(path: &Path) -> Result<()> {
+fn run(path: Option<&Path>) -> Result<()> {
     #[cfg(feature = "miyoo")]
     {
         slint::platform::set_platform(Box::new(miyoo::MyPlatform::new())).unwrap();
@@ -66,8 +66,6 @@ fn run(path: &Path) -> Result<()> {
 
     info!("initializing Vinyl...");
     let app = MainWindow::new().unwrap();
-
-    let song = SongData::load(path.to_path_buf())?;
 
     let timer = Timer::default();
     timer.start(slint::TimerMode::Repeated, Duration::from_secs(1), {
@@ -87,15 +85,35 @@ fn run(path: &Path) -> Result<()> {
         }
     });
 
-    app.global::<NowPlaying>().set_is_playing(true);
-    app.global::<NowPlaying>().set_song(Song {
-        path: song.path.to_string_lossy().as_ref().into(),
-        title: song.title.as_deref().unwrap_or_default().into(),
-        artist: song.artist.as_deref().unwrap_or_default().into(),
-        album: song.album.as_deref().unwrap_or_default().into(),
-        cover_art: song.cover_art(24)?,
-        duration: song.duration.as_secs() as i32,
-    });
+    if let Some(path) = path {
+        app.global::<NowPlaying>().set_is_playing(true);
+        app.global::<NowPlaying>()
+            .set_song((&SongData::load(path.to_path_buf()).unwrap()).into());
+    }
+
+    app.global::<LibraryModel>().set_songs(
+        [
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-01 Mr. Self Destruct.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-02 Piggy.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-03 Heresy.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-04 March of the Pigs.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-05 Closer.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-06 Ruiner.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/1-07 The Becoming.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-01 I Do Not Want This.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-02 Big Man With a Gun.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-03 A Warm Place.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-04 Eraser.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-05 Reptile.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-06 The Downward Spiral.m4a",
+            "/mnt/d/Music/Nine Inch Nails/The Downward Spiral/2-07 Hurt.m4a",
+        ]
+        .iter()
+        .map(|path| (&SongData::load(PathBuf::from(path)).unwrap()).into())
+        .collect::<Vec<_>>()
+        .as_slice()
+        .into(),
+    );
 
     app.global::<Format>().on_format_time(|seconds: i32| {
         let minutes = seconds / 60;

@@ -1,0 +1,24 @@
+import { HorizontalBox, ListView } from "std-widgets.slint";
+import { Text } from "prelude.slint";
+import { Song } from "../model.slint";
+
+export component Playlist {
+    in-out property <[Song]> songs;
+
+    height: 100%;
+    width: 100%;
+
+    ListView {
+        for song in songs: HorizontalBox {
+            Text {
+                text: song.title;
+                font-size: 20px;
+            }
+
+            Text {
+                text: song.artist;
+                font-size: 20px;
+            }
+        }
+    }
+}

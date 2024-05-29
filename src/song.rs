@@ -2,7 +2,7 @@ use std::{
     borrow::Cow,
     fs::File,
     io::{Read, Seek},
-    path::PathBuf,
+    path::{Path, PathBuf},
     time::Duration,
 };
 
@@ -14,6 +14,8 @@ use lofty::{
     tag::Accessor,
 };
 use slint::SharedPixelBuffer;
+
+use crate::Song;
 
 pub struct SongData {
     pub path: PathBuf,
@@ -73,5 +75,18 @@ impl SongData {
         } else {
             slint::Image::default()
         })
+    }
+}
+
+impl From<&SongData> for Song {
+    fn from(song: &SongData) -> Self {
+        Song {
+            album: song.album.as_deref().unwrap_or_default().into(),
+            artist: song.artist.as_deref().unwrap_or_default().into(),
+            cover_art: song.cover_art(24).unwrap_or_default(),
+            duration: song.duration.as_secs() as i32,
+            path: song.path.to_string_lossy().as_ref().into(),
+            title: song.title.as_deref().unwrap_or_default().into(),
+        }
     }
 }

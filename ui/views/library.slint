@@ -1,0 +1,30 @@
+import { Text } from "../components/prelude.slint";
+import { Playlist } from "../components/playlist.slint";
+import { Song } from "../model.slint";
+
+export global LibraryModel {
+    in property<[Song]> songs;
+}
+
+export component Library {
+    height: 100%;
+    width: 100%;
+
+    VerticalLayout {
+        padding-left: 36px;
+        padding-right: 36px;
+        alignment: start;
+
+        Text {
+            height: 48px;
+            text: @tr("Now Playing");
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            font-size: 20px;
+        }
+
+        Playlist {
+            songs: LibraryModel.songs;
+        }
+    }
+}
