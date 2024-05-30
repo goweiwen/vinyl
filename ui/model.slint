@@ -8,7 +8,12 @@ export struct Song {
 }
 
 export global NowPlaying {
-    in property <Song> song;
-    in property <int> progress: 0;
-    in property <bool> is-playing: false;
+    callback load_song(Song);
+    callback play();
+    callback pause();
+    callback seek(int);
+
+    in-out property <Song> song;
+    in-out property <int> progress: 0;
+    in-out property <bool> is-playing: false;
 }

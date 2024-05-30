@@ -2,24 +2,17 @@ import { NowPlaying, Song } from "../model.slint";
 import { Text } from "../components/prelude.slint";
 import { ProgressBar } from "../components/progress-bar.slint";
 
-export global MusicService {
-    callback load_song(Song);
-    callback play();
-    callback pause();
-}
-
 export component Player {
     in property <bool> autoplay;
 
     init => {
-        MusicService.load_song(NowPlaying.song);
+        NowPlaying.load_song(NowPlaying.song);
         if autoplay {
-            MusicService.play();
+            NowPlaying.play();
         } else {
-            MusicService.pause();
+            NowPlaying.pause();
         }
     }
-    
     height: 100%;
     width: 100%;
 
@@ -48,7 +41,7 @@ export component Player {
                 Image {
                     width: 100%;
                     height: 100%;
-                    source: NowPlaying.song.cover-art; 
+                    source: NowPlaying.song.cover-art;
                 }
             }
 

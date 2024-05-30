@@ -18,11 +18,12 @@ clap = { version = "4.5.4", features = ["derive"] }
 evdev = { version = "0.12.2", features = ["tokio"] }
 framebuffer = "0.3.1"
 image = "0.25.1"
+kanal = "0.1.0-pre8"
 lofty = "0.19.2"
 log = { version = "0.4.21", features = ["release_max_level_info"] }
 nix = { version = "0.28.0", features = ["ioctl"] }
 rgb = "0.8.37"
-rodio = { version = "0.18.1", optional = true }
+rodio = { version = "0.18.1", features = ["symphonia-all"], optional = true }
 rubato = "0.15.0"
 simple_logger = "5.0.0"
 slint = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "log", "renderer-software"] }

@@ -1,10 +1,10 @@
-import { Player, MusicService } from "views/player.slint";
+import { Player } from "views/player.slint";
 import { Library, LibraryModel } from "views/library.slint";
 import { Song, NowPlaying } from "model.slint";
 import { Format } from "util.slint";
 import "fonts/Nunito.ttf";
 
-export { NowPlaying, MusicService, LibraryModel, Format }
+export { NowPlaying, LibraryModel, Format }
 
 export component MainWindow inherits Window {
     default-font-family: "Nunito";
@@ -15,7 +15,5 @@ export component MainWindow inherits Window {
     if NowPlaying.song.path != "": Player {
         autoplay: false;
     }
-    
-    if NowPlaying.song.path == "": Library {
-    }
+    if NowPlaying.song.path == "": Library { }
 }

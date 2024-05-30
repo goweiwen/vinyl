@@ -2,7 +2,7 @@ use std::{
     borrow::Cow,
     fs::File,
     io::{Read, Seek},
-    path::{Path, PathBuf},
+    path::PathBuf,
     time::Duration,
 };
 
