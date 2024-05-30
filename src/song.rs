@@ -63,14 +63,15 @@ impl SongData {
     pub fn cover_art(&self, border_radius: u32) -> Result<slint::Image> {
         Ok(if let Some(ref cover_art) = self.cover_art {
             let bytes = cover_art.bytes().collect::<std::io::Result<Vec<_>>>()?;
+            let image = RgbaImage::from_vec(cover_art.width(), cover_art.height(), bytes).unwrap();
             let mut image =
-                RgbaImage::from_vec(cover_art.width(), cover_art.height(), bytes).unwrap();
+                image::imageops::resize(&image, 250, 250, image::imageops::FilterType::Lanczos3);
             crate::image::squircle(&mut image, border_radius);
 
             slint::Image::from_rgba8(SharedPixelBuffer::clone_from_slice(
                 image.as_raw(),
-                cover_art.width(),
-                cover_art.height(),
+                image.width(),
+                image.height(),
             ))
         } else {
             slint::Image::default()
@@ -83,7 +84,7 @@ impl From<&SongData> for Song {
         Song {
             album: song.album.as_deref().unwrap_or_default().into(),
             artist: song.artist.as_deref().unwrap_or_default().into(),
-            cover_art: song.cover_art(24).unwrap_or_default(),
+            cover_art: song.cover_art(125).unwrap_or_default(),
             duration: song.duration.as_secs() as i32,
             path: song.path.to_string_lossy().as_ref().into(),
             title: song.title.as_deref().unwrap_or_default().into(),

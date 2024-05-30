@@ -89,7 +89,6 @@ pub fn round(image: &mut RgbaImage, radius: u32) {
 
 /// Draw squircle-rounded corners on an image.
 pub fn squircle(image: &mut RgbaImage, radius: u32) {
-    let radius = radius * 4; // We increase the border-radius because the squircle effect is more subtle.
     let color = Rgba([0, 0, 0, 0]);
 
     let (width, height) = image.dimensions();

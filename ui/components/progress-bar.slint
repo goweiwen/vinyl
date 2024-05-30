@@ -11,16 +11,16 @@ export component ProgressBar inherits VerticalLayout {
         spacing: 12px;
 
         Rectangle {
-            background: grey;
+            background: #ffffff80;
             height: line-width;
-            border-radius: line-width;
+            border-radius: line-width / 2;
             width: 100%;
 
             Rectangle {
                 x: 0;
                 background: white;
                 height: line-width;
-                border-radius: 12px;
+                border-radius: line-width / 2;
                 width: line-width + (progress / duration) * (parent.width - line-width * 2);
                 animate width { duration: 1s; }
             }

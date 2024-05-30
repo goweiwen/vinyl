@@ -16,27 +16,57 @@ export component Player {
     height: 100%;
     width: 100%;
 
-    VerticalLayout {
-        padding-left: 36px;
-        padding-right: 36px;
-        alignment: start;
+    // Rectangle {
+    //     background: @linear-gradient(45deg, #411B1B 0%, #212748 100%);
+    // }
+
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: 100%;
+        height: 40px;
+
+        Image {
+            x: 12px;
+            y: 6px;
+            width: 28px;
+            height: 28px;
+            source: @image-url("../assets/music.svg");
+        }
 
         Text {
-            height: 48px;
+            height: 40px;
             text: @tr("Now Playing");
             horizontal-alignment: center;
             vertical-alignment: center;
             font-size: 20px;
         }
 
+        Image {
+            x: parent.width - 40px - 12px;
+            y: 0px;
+            width: 40px;
+            height: 40px;
+            source: @image-url("../assets/battery.svg");
+        }
+
+    }
+
+    VerticalLayout {
+        padding-top: 40px;
+        padding-left: 24px;
+        padding-right: 24px;
+        padding-bottom: 24px;
+        alignment: start;
+
         HorizontalLayout {
-            padding-top: 24px;
-            padding-bottom: 36px;
             spacing: 36px;
+            padding-top: 24px;
+            padding-bottom: 24px;
 
             Rectangle {
                 width: 250px;
-                height: self.width;
+                height: 250px;
 
                 Image {
                     width: 100%;
@@ -52,7 +82,7 @@ export component Player {
                 Text {
                     text: NowPlaying.song.title;
                     wrap: word-wrap;
-                    font-size: 32px;
+                    font-size: 28px;
                 }
 
                 Text {
@@ -72,6 +102,47 @@ export component Player {
         ProgressBar {
             progress: NowPlaying.progress;
             duration: NowPlaying.song.duration;
+        }
+    }
+
+    VerticalLayout {
+        alignment: end;
+        padding-bottom: 26px;
+
+        HorizontalLayout {
+            alignment: center;
+
+            Rectangle {
+                border-radius: 32px;
+                background: #ffffff80;
+
+                HorizontalLayout {
+                    padding-top: 12px;
+                    padding-bottom: 12px;
+                    padding-left: 24px;
+                    padding-right: 24px;
+                    spacing: 24px;
+                    alignment: center;
+
+                    Image {
+                        width: 40px;
+                        height: 40px;
+                        source: @image-url("../assets/play.svg");
+                    }
+
+                    Image {
+                        width: 40px;
+                        height: 40px;
+                        source: @image-url("../assets/repeat.svg");
+                    }
+
+                    Image {
+                        width: 40px;
+                        height: 40px;
+                        source: @image-url("../assets/shuffle.svg");
+                    }
+                }
+            }
         }
     }
 }
