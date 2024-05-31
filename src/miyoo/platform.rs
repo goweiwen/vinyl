@@ -8,8 +8,8 @@ use log::trace;
 use slint::platform::software_renderer::{PremultipliedRgbaColor, TargetPixel};
 use slint::{
     platform::{
-        software_renderer::{MinimalSoftwareWindow, RepaintBufferType},
-        Platform,
+        software_renderer::{MinimalSoftwareWindow, RenderingRotation, RepaintBufferType},
+        Platform, WindowAdapter,
     },
     PhysicalSize,
 };
@@ -44,6 +44,10 @@ impl MyPlatform {
         let buffer_offset = (yoffset * width + xoffset) * bytes_per_pixel as usize;
 
         let window = MinimalSoftwareWindow::new(RepaintBufferType::ReusedBuffer);
+        window.request_redraw();
+        window.draw_if_needed(|renderer| {
+            renderer.set_rendering_rotation(RenderingRotation::Rotate180)
+        });
         window.set_size(PhysicalSize::new(
             framebuffer.var_screen_info.xres,
             framebuffer.var_screen_info.yres,
@@ -94,13 +98,6 @@ impl Platform for MyPlatform {
             // Draw the scene if something needs to be drawn.
             self.window.draw_if_needed(|renderer| {
                 renderer.render(&mut frame, self.window.size().width as usize);
-                // Rotate 180 degrees
-                {
-                    let len = frame.len();
-                    for i in 0..len / 2 {
-                        frame.swap(i, len - 1 - i);
-                    }
-                }
                 framebuffer.frame[self.buffer_offset..self.buffer_offset + self.buffer_size]
                     .copy_from_slice(&frame.as_bytes());
             });

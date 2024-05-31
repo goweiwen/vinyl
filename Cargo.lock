@@ -4155,6 +4155,7 @@ dependencies = [
  "clap",
  "evdev",
  "framebuffer",
+ "i-slint-core",
  "image 0.25.1",
  "kanal",
  "lofty",
