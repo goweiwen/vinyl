@@ -40,15 +40,15 @@ fn main() -> Result<()> {
         .with_level(
             #[cfg(debug_assertions)]
             if args.verbose {
-                LevelFilter::Debug
+                LevelFilter::Trace
             } else {
-                LevelFilter::Info
+                LevelFilter::Debug
             },
             #[cfg(not(debug_assertions))]
             if args.verbose {
-                LevelFilter::Info
+                LevelFilter::Debug
             } else {
-                LevelFilter::Warn
+                LevelFilter::Info
             },
         )
         .init()

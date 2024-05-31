@@ -2,7 +2,7 @@ mod resampler;
 
 use anyhow::{Context, Result};
 use bytemuck::cast_slice;
-use log::error;
+use log::{debug, error};
 use nix::ioctl_readwrite;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -66,17 +66,21 @@ impl Oss {
                 if let Some(msg) = rx.try_recv().unwrap() {
                     match msg {
                         Message::Load(path) => {
+                            debug!("load {}", path.to_string_lossy());
                             if let Ok(loaded_track) = load(&path) {
                                 track = loaded_track;
                             }
                         }
                         Message::Play => {
+                            debug!("play");
                             is_playing = true;
                         }
                         Message::Pause => {
+                            debug!("pause");
                             is_playing = false;
                         }
                         Message::Seek(duration) => {
+                            debug!("seek {duration}");
                             if let Some(ref mut track) = track {
                                 track
                                     .format
@@ -122,7 +126,7 @@ impl Oss {
                         Ok(decoded) => {
                             let spec = decoded.spec();
                             if resampler.is_none() && spec.rate() != SAMPLE_RATE {
-                                println!("Resampling {} Hz to {} Hz", spec.rate(), SAMPLE_RATE);
+                                debug!("Resampling {} Hz to {} Hz", spec.rate(), SAMPLE_RATE);
                                 *resampler =
                                     Some(resampler::Resampler::new(spec, SAMPLE_RATE, 1024));
                             }
@@ -136,12 +140,12 @@ impl Oss {
                         }
                         Err(Error::IoError(e)) => {
                             // The packet failed to decode due to an IO error, skip the packet.
-                            println!("{e:?}");
+                            error!("{e:?}");
                             continue;
                         }
                         Err(Error::DecodeError(e)) => {
                             // The packet failed to decode due to invalid data, skip the packet.
-                            println!("{e:?}");
+                            error!("{e:?}");
                             continue;
                         }
                         Err(err) => {
