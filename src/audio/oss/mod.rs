@@ -24,7 +24,7 @@ ioctl_readwrite!(dsp_speed, b'P', 2, i32);
 ioctl_readwrite!(dsp_setfmt, b'P', 5, i32);
 ioctl_readwrite!(dsp_channels, b'P', 6, i32);
 
-static SAMPLE_RATE: u32 = 48000;
+static SAMPLE_RATE: u32 = 44100;
 static BIT_RATE: i32 = 0x10;
 static CHANNELS: i32 = 2;
 
