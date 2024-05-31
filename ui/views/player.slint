@@ -15,12 +15,12 @@ export component Player inherits FocusScope {
             return accept;
         }
 
-        if event.text == "x" {
+        if event.text == "y" {
             repeat = !repeat;
             return accept;
         }
 
-        if event.text == "y" {
+        if event.text == "x" {
             shuffle = !shuffle;
             return accept;
         }
@@ -34,6 +34,7 @@ export component Player inherits FocusScope {
     init => {
         NowPlaying.load_song(NowPlaying.song);
     }
+
     height: 100%;
     width: 100%;
 
