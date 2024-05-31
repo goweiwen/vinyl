@@ -8,8 +8,8 @@ authors = ["Goh Wei Wen <goweiwen@gmail.com>"]
 
 [features]
 default = ["simulator"]
-simulator = ["slint/backend-default", "rodio"]
-miyoo = []
+simulator = ["slint/backend-default", "slint/renderer-skia", "rodio"]
+miyoo = ["slint/renderer-software"]
 
 [dependencies]
 anyhow = "1.0.85"
@@ -26,7 +26,7 @@ rgb = "0.8.37"
 rodio = { version = "0.18.1", features = ["symphonia-all"], optional = true }
 rubato = "0.15.0"
 simple_logger = "5.0.0"
-slint = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "log", "renderer-software"] }
+slint = { version = "1.6.0", default-features = false, features = ["compat-1-2", "std", "log"] }
 i-slint-core = { version = "1.6.0", features = ["software-renderer-rotation"] }
 smallvec = "1.13.2"
 symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", branch = "dev-0.6", features = ["all-codecs", "all-formats"] }
