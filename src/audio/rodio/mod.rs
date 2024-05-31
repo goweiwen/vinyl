@@ -1,6 +1,6 @@
 use anyhow::Result;
 use log::warn;
-use rodio::{Decoder, OutputStream, OutputStreamHandle};
+use rodio::{Decoder, OutputStream};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;

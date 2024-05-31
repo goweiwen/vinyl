@@ -11,8 +11,11 @@ export component MainWindow inherits Window {
     width: 640px;
     height: 480px;
     background: black;
-    forward-focus: player;
 
-    player := Player {}
+    if NowPlaying.song.path != "": player := Player {
+        init => {
+            player.focus();
+        }
+    }
     if NowPlaying.song.path == "": Library {}
 }
