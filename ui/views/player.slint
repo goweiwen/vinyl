@@ -2,8 +2,34 @@ import { NowPlaying, Song } from "../model.slint";
 import { Text } from "../components/prelude.slint";
 import { ProgressBar } from "../components/progress-bar.slint";
 
-export component Player {
-    in property <bool> autoplay;
+export component Player inherits FocusScope {
+    key-released(event) => {
+        if event.text == "a" {
+            if NowPlaying.is-playing {
+                NowPlaying.pause();
+                NowPlaying.is-playing = false;
+            } else {
+                NowPlaying.play();
+                NowPlaying.is-playing = true;
+            }
+            return accept;
+        }
+
+        if event.text == "x" {
+            repeat = !repeat;
+            return accept;
+        }
+
+        if event.text == "y" {
+            shuffle = !shuffle;
+            return accept;
+        }
+
+        return reject;
+    }
+
+    in-out property<bool> shuffle;
+    in-out property<bool> repeat;
 
     init => {
         NowPlaying.load_song(NowPlaying.song);
@@ -57,7 +83,7 @@ export component Player {
         HorizontalLayout {
             spacing: 36px;
             padding-top: 24px;
-            padding-bottom: 24px;
+            padding-bottom: 30px;
 
             Rectangle {
                 width: 250px;
@@ -122,16 +148,18 @@ export component Player {
                     Image {
                         width: 40px;
                         height: 40px;
-                        source: @image-url("../assets/play.svg");
+                        source: NowPlaying.is-playing ? @image-url("../assets/play.svg") : @image-url("../assets/pause.svg");
                     }
 
                     Image {
+                        colorize: repeat ? white : #ffffff80;
                         width: 40px;
                         height: 40px;
                         source: @image-url("../assets/repeat.svg");
                     }
 
                     Image {
+                        colorize: shuffle ? white : #ffffff80;
                         width: 40px;
                         height: 40px;
                         source: @image-url("../assets/shuffle.svg");
