@@ -1,7 +1,9 @@
 #![feature(lazy_cell)]
 
 mod audio;
+mod components;
 mod image;
+mod input;
 mod song;
 
 #[cfg(feature = "miyoo")]
@@ -19,7 +21,6 @@ use simple_logger::SimpleLogger;
 use slint::Timer;
 
 use crate::song::SongData;
-use audio::Audio;
 
 slint::include_modules!();
 
@@ -120,7 +121,7 @@ fn run(path: Option<&Path>) -> Result<()> {
         format!("{minutes:02}:{seconds:02}").into()
     });
 
-    audio::setup(&app);
+    components::init(&app);
 
     info!("running event loop");
     app.run().unwrap();

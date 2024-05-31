@@ -4,7 +4,7 @@ use std::thread;
 use std::{cell::RefCell, rc::Rc};
 
 use framebuffer::Framebuffer;
-use log::trace;
+use log::debug;
 use slint::platform::software_renderer::{PremultipliedRgbaColor, TargetPixel};
 use slint::{
     platform::{
@@ -27,10 +27,9 @@ pub struct MyPlatform {
 impl MyPlatform {
     pub fn new() -> Self {
         let framebuffer = Framebuffer::new("/dev/fb0").expect("Failed to open /dev/fb0");
-        trace!(
+        debug!(
             "init fb: var_screen_info: {:?}, fix_screen_info: {:?}",
-            framebuffer.var_screen_info,
-            framebuffer.fix_screen_info,
+            framebuffer.var_screen_info, framebuffer.fix_screen_info,
         );
 
         let (width, height, xoffset, yoffset) = (
@@ -76,7 +75,7 @@ impl Platform for MyPlatform {
         let mut evdev = self.evdev.take().unwrap();
         let (input_tx, input_rx) = channel();
         thread::spawn(move || loop {
-            if let Some(event) = evdev.poll() {
+            if let Some(event) = evdev.fetch_events() {
                 let _ = input_tx.send(event);
             }
         });
@@ -92,6 +91,7 @@ impl Platform for MyPlatform {
             slint::platform::update_timers_and_animations();
 
             while let Ok(event) = input_rx.try_recv() {
+                debug!("input event: {:?}", &event);
                 self.window.dispatch_event(event);
             }
 

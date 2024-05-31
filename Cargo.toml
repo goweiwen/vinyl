@@ -20,7 +20,7 @@ framebuffer = "0.3.1"
 image = "0.25.1"
 kanal = "0.1.0-pre8"
 lofty = "0.19.2"
-log = { version = "0.4.21", features = ["release_max_level_info"] }
+log = { version = "0.4.21", features = ["release_max_level_debug"] }
 nix = { version = "0.28.0", features = ["ioctl"] }
 rgb = "0.8.37"
 rodio = { version = "0.18.1", features = ["symphonia-all"], optional = true }
@@ -30,6 +30,9 @@ slint = { version = "1.6.0", default-features = false, features = ["compat-1-2",
 i-slint-core = { version = "1.6.0", features = ["software-renderer-rotation"] }
 smallvec = "1.13.2"
 symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", branch = "dev-0.6", features = ["all-codecs", "all-formats"] }
+strum = { version = "0.26.2", features = ["derive"] }
+strum_macros = "0.26.2"
+tokio = "1.38.0"
 
 [build-dependencies]
 slint-build = "1.6.0"
