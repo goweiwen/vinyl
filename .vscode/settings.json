@@ -1,3 +1,6 @@
 {
-    "rust-analyzer.check.features": ["simulator"],
+    "rust-analyzer.check.features": [
+        "simulator"
+    ],
+    "rust-analyzer.check.noDefaultFeatures": true
 }
