@@ -28,7 +28,6 @@ pub fn setup(app: &MainWindow) {
     app.global::<NowPlaying>().set_is_playing(true);
 
     app.global::<NowPlaying>().on_load_song(|song| {
-        info!("loaded: {:?}", song);
         let _ = AUDIO.load(Path::new(song.path.as_str()));
     });
 

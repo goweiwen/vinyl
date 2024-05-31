@@ -9,19 +9,16 @@ use std::time::Duration;
 use crate::audio::Audio;
 
 pub struct Rodio {
-    _handle: OutputStreamHandle,
     sink: rodio::Sink,
 }
 
 impl Rodio {
     pub fn new() -> Result<Self> {
-        let (_stream, handle) = OutputStream::try_default()?;
+        let (stream, handle) = OutputStream::try_default()?;
+        Box::leak(Box::new(stream));
         let sink = rodio::Sink::try_new(&handle)?;
 
-        Ok(Self {
-            _handle: handle,
-            sink,
-        })
+        Ok(Self { sink })
     }
 }
 
