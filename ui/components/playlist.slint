@@ -2,7 +2,7 @@ import { HorizontalBox, ListView } from "std-widgets.slint";
 import { Text } from "prelude.slint";
 import { Song } from "../model.slint";
 
-export component Playlist {
+export component Playlist inherits FocusScope {
     in-out property <[Song]> songs;
 
     height: 100%;

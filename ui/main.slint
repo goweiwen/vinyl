@@ -10,12 +10,16 @@ export component MainWindow inherits Window {
     default-font-family: "Nunito";
     width: 640px;
     height: 480px;
-    background: black;
+    background: #411B1B;
 
     if NowPlaying.song.path != "": player := Player {
         init => {
             player.focus();
         }
     }
-    if NowPlaying.song.path == "": Library {}
+    if NowPlaying.song.path == "": library := Library {
+        init => {
+            library.focus();
+        }
+    }
 }

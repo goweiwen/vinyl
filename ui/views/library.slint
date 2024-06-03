@@ -6,9 +6,10 @@ export global LibraryModel {
     in property<[Song]> songs;
 }
 
-export component Library {
+export component Library inherits FocusScope {
     height: 100%;
     width: 100%;
+    forward-focus: playlist;
 
     VerticalLayout {
         padding-left: 36px;
@@ -23,7 +24,7 @@ export component Library {
             font-size: 20px;
         }
 
-        Playlist {
+        playlist := Playlist {
             songs: LibraryModel.songs;
         }
     }

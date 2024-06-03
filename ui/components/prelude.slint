@@ -1,3 +1,7 @@
 export component Text inherits Text {
-    color: white;
+    in property<bool> has-focus;
+
+    color: has-focus ? black : white;
+}
+
 }
